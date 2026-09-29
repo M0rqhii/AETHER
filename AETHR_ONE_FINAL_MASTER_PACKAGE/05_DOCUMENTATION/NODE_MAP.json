@@ -1,0 +1,94 @@
+{
+  "root": "AETHR_ONE",
+  "groups": {
+    "body": "Body_Group",
+    "crown": "Crown_Group",
+    "crown_electronics": "Crown_Electronics_Group",
+    "branding": "Branding"
+  },
+  "body": {
+    "outer_shell": "Outer_Shell",
+    "bottom_plate": "Bottom_Plate",
+    "anti_slip_ring": "AntiSlip_Ring",
+    "body_shoulder": "Body_Shoulder",
+    "inner_vessel": "Inner_Vessel",
+    "neck_sleeve": "Neck_Sleeve",
+    "mouth_lip": "Mouth_Lip",
+    "external_thread": "External_Thread",
+    "thermal_reflective_layer": "Thermal_Reflective_Layer",
+    "thermal_reflective_shoulder": "Thermal_Reflective_Shoulder",
+    "thermal_bridge_neck": "Thermal_Bridge_Neck",
+    "vacuum_getter": "Vacuum_Getter",
+    "vacuum_visualization": "Vacuum_Visualization",
+    "vacuum_bottom_visualization": "Vacuum_Bottom_Visualization",
+    "liquid_helper": "Liquid_Volume"
+  },
+  "crown": {
+    "shell": "Crown_Shell",
+    "glass": "Crown_Glass",
+    "internal_thread": "Internal_Thread",
+    "seal": "Seal",
+    "oled_panel": "OLED_Panel",
+    "oled_edge": "OLED_Edge",
+    "oled_demo_glyphs": "OLED_Glyphs_72",
+    "display_flex": "Display_Flex",
+    "display_flex_traces": "Display_Flex_Traces",
+    "pcb_main": "PCB_Main",
+    "pcb_ics": "PCB_ICs",
+    "pcb_passives": "PCB_Passives",
+    "pcb_traces": "PCB_Traces",
+    "battery_pouch": "LiPo_Pouch",
+    "battery_face": "LiPo_FoilFace",
+    "battery_edge_seal": "LiPo_EdgeSeal",
+    "battery_folded_seam": "LiPo_FoldedSeam",
+    "battery_negative_tab": "LiPo_NegativeTab",
+    "battery_positive_tab": "LiPo_PositiveTab",
+    "battery_tab_insulator": "LiPo_TabInsulator",
+    "battery_marking": "LiPo_TechMarking",
+    "charging_ferrite": "Charging_Ferrite",
+    "charging_coil": "Charging_Coil",
+    "charge_controller": "Charge_Controller",
+    "charge_controller_ic": "Charge_Controller_IC",
+    "sense_plate": "AETHR_Sense_Plate",
+    "sense_bezel": "AETHR_Sense_Bezel",
+    "sense_window": "AETHR_Sense_Window",
+    "sense_module": "AETHR_Sense_Module"
+  },
+  "branding": {
+    "monogram": "AETHR_Monogram"
+  },
+  "runtime_helpers_to_hide_initially": [
+    "Vacuum_Visualization",
+    "Vacuum_Bottom_Visualization",
+    "Liquid_Volume",
+    "OLED_Glyphs_72"
+  ],
+  "aethr_charge": {
+    "asset": "01_MODELS/dock/AETHR_CHARGE_FINAL.glb",
+    "root": "AETHR_CHARGE",
+    "groups": {
+      "shell": "Dock_Shell_Group",
+      "electronics": "Dock_Electronics_Group"
+    },
+    "nodes": {
+      "housing": "Dock_Housing",
+      "top_surface": "Top_Surface",
+      "top_bezel": "Top_Bezel",
+      "status_light_ring": "Status_Light_Ring",
+      "magnetic_ring": "Magnetic_Ring",
+      "ferrite": "Ferrite_Shield",
+      "charging_coil": "Charging_Coil",
+      "control_board": "Control_Board",
+      "control_ics": "Control_ICs",
+      "bottom_plate": "Bottom_Plate",
+      "anti_slip_ring": "AntiSlip_Ring",
+      "usb_c_group": "USB_C_Group",
+      "usb_c_bezel": "USB_C_Bezel",
+      "usb_c_inner_shell": "USB_C_InnerShell",
+      "usb_c_cavity": "USB_C_Cavity",
+      "usb_c_throat": "USB_C_Throat",
+      "usb_c_tongue": "USB_C_Tongue",
+      "usb_c_contacts": "USB_C_Contacts"
+    }
+  }
+}

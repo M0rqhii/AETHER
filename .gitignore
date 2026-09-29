@@ -1,0 +1,27 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+.next-build/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# production
+build/
+dist/
+
+# local env
+.env
+.env*.local
+
+# vercel
+.vercel
+
+# os / editor
+.DS_Store
+Thumbs.db
+
+# graphify knowledge graph (generated, rebuild with: graphify update .)
+graphify-out/

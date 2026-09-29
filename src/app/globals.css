@@ -1,0 +1,288 @@
+/* ==========================================================================
+   AETHR — design tokens and base layer
+   Spec §8 colour system, §10 typography, §11 spacing, §13 buttons, §163–165.
+   ========================================================================== */
+
+:root {
+  /* Backgrounds */
+  --bg-000: #050607;
+  --bg-050: #070809;
+  --bg-100: #0a0b0c;
+  --bg-200: #101214;
+
+  /* Text */
+  --text-primary: #f3f3f0;
+  --text-secondary: rgba(243, 243, 240, 0.58);
+  --text-tertiary: rgba(243, 243, 240, 0.34);
+  --text-disabled: rgba(243, 243, 240, 0.2);
+
+  /* Lines */
+  --line-strong: rgba(255, 255, 255, 0.2);
+  --line-default: rgba(255, 255, 255, 0.11);
+  --line-soft: rgba(255, 255, 255, 0.06);
+
+  /* Narrative accents */
+  --hot-main: #d98c53;
+  --hot-bright: #f0b06d;
+  --hot-soft: rgba(217, 140, 83, 0.18);
+  --cold-main: #7d9fb8;
+  --cold-bright: #a6c5d8;
+  --cold-soft: rgba(125, 159, 184, 0.16);
+  --lowe-main: #b67a3a;
+  --lowe-bright: #d4a066;
+  --charge-main: #e8f2f7;
+  --charge-soft: rgba(232, 242, 247, 0.18);
+
+  /* Type scale */
+  --display-xl: clamp(88px, 12vw, 220px);
+  --display-lg: clamp(64px, 8vw, 150px);
+  --display-md: clamp(48px, 6vw, 110px);
+  --heading-xl: clamp(42px, 5vw, 84px);
+  --heading-lg: clamp(32px, 3.5vw, 60px);
+  --heading-md: clamp(26px, 2.3vw, 40px);
+  --body-lg: 18px;
+  --body-md: 15px;
+  --body-sm: 13px;
+  --micro: 11px;
+
+  /* Spacing — 8px base grid */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+
+  --safe-x: clamp(24px, 4vw, 72px);
+  --navbar-h: 64px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-ui: 220ms;
+  --dur-ui-slow: 340ms;
+  --dur-title: 700ms;
+
+  --radius-card: 12px;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --safe-x: 18px;
+    --navbar-h: 56px;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: var(--bg-050);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg-050);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--body-md);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior-y: none;
+}
+
+/* The experience owns the pointer; a native cursor would fight the custom one. */
+body[data-custom-cursor='on'] {
+  cursor: none;
+}
+
+h1,
+h2,
+h3,
+p,
+figure {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+canvas {
+  display: block;
+  touch-action: pan-y;
+}
+
+::selection {
+  background: rgba(243, 243, 240, 0.16);
+}
+
+/* --------------------------------------------------------------------------
+   Focus — spec §165: never remove the outline without a replacement.
+   -------------------------------------------------------------------------- */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Typographic primitives
+   -------------------------------------------------------------------------- */
+.display {
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.88;
+  text-transform: uppercase;
+}
+
+.mono {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: var(--micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.body-copy {
+  max-width: 420px;
+  color: var(--text-secondary);
+  font-size: var(--body-md);
+  line-height: 1.55;
+}
+
+/* --------------------------------------------------------------------------
+   Buttons — spec §13
+   -------------------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font-size: var(--body-sm);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    transform var(--dur-ui) var(--ease-out),
+    background-color var(--dur-ui) var(--ease-out),
+    border-color var(--dur-ui) var(--ease-out),
+    opacity var(--dur-ui) var(--ease-out);
+  will-change: transform;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: #f2f2ef;
+  color: #090a0b;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn--primary:hover:not(:disabled) {
+  transform: scale(1.015);
+  background: #ffffff;
+}
+
+.btn--secondary {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--text-primary);
+}
+
+.btn--secondary:hover:not(:disabled) {
+  transform: scale(1.015);
+  border-color: var(--line-strong);
+}
+
+.btn--sm {
+  height: 38px;
+  padding: 0 16px;
+  font-size: var(--micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* --------------------------------------------------------------------------
+   Layout helpers
+   -------------------------------------------------------------------------- */
+.overlay-root {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.overlay-root > * {
+  pointer-events: auto;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion — spec §111. Content is never blocked, only calmed.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  body[data-custom-cursor='on'] {
+    cursor: auto;
+  }
+}

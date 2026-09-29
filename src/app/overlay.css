@@ -1,0 +1,1478 @@
+/* ==========================================================================
+   AETHR — overlay layer
+   Everything above the canvas: chrome, typography, callouts, panels, commerce.
+   ========================================================================== */
+
+.canvas-root {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 0;
+}
+
+.scroll-spacer {
+  position: relative;
+  width: 100%;
+  pointer-events: none;
+}
+
+.overlay-root {
+  z-index: 10;
+}
+
+/* --------------------------------------------------------------------------
+   Navbar
+   -------------------------------------------------------------------------- */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  height: var(--navbar-h);
+  padding-inline: var(--safe-x);
+  background: transparent;
+  transition:
+    background-color var(--dur-ui-slow) var(--ease-out),
+    backdrop-filter var(--dur-ui-slow) var(--ease-out),
+    border-color var(--dur-ui-slow) var(--ease-out);
+  border-bottom: 1px solid transparent;
+}
+
+.navbar--solid {
+  background: rgba(5, 6, 7, 0.45);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom-color: var(--line-soft);
+}
+
+.navbar__brand {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.navbar__links {
+  display: flex;
+  gap: var(--space-6);
+  margin-left: auto;
+}
+
+.navbar__links button {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: var(--micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding-block: var(--space-2);
+  border-bottom: 1px solid transparent;
+  transition:
+    color var(--dur-ui) var(--ease-out),
+    border-color var(--dur-ui) var(--ease-out);
+}
+
+.navbar__links button:hover {
+  color: var(--text-primary);
+  border-bottom-color: var(--line-strong);
+}
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    color var(--dur-ui) var(--ease-out),
+    background-color var(--dur-ui) var(--ease-out);
+}
+
+.icon-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.icon-btn__badge {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 15px;
+  height: 15px;
+  padding-inline: 4px;
+  border-radius: 999px;
+  background: #f2f2ef;
+  color: #090a0b;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 9px;
+  line-height: 15px;
+  text-align: center;
+}
+
+.navbar__menu {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Mobile menu — spec §187
+   -------------------------------------------------------------------------- */
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-7);
+  padding: var(--safe-x);
+  background: var(--bg-050);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-ui-slow) var(--ease-out);
+}
+
+.mobile-menu--open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-menu__close {
+  position: absolute;
+  top: 10px;
+  right: calc(var(--safe-x) - 8px);
+}
+
+.mobile-menu ul {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.mobile-menu button {
+  font-size: clamp(28px, 8vw, 36px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   Chapter indicator — spec §15
+   -------------------------------------------------------------------------- */
+.chapters {
+  position: fixed;
+  right: calc(var(--safe-x) - 4px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 25;
+}
+
+.chapters ol {
+  display: grid;
+  /* Thirteen rows have to fit whatever height the viewport actually is. Fixed at
+     10 px they ran off the bottom of a laptop screen, which is what made the
+     column read as unrelated to the shot. */
+  gap: clamp(4px, 1.1vh, 12px);
+  justify-items: end;
+}
+
+/* Below roughly a 13" laptop there is no room for the column at all; the navbar
+   already names the section. */
+@media (max-height: 620px) {
+  .chapters {
+    display: none;
+  }
+}
+
+.chapters button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text-primary);
+  opacity: 0.24;
+  cursor: pointer;
+  transition: opacity var(--dur-ui) var(--ease-out);
+}
+
+.chapters button:hover,
+.chapters button.is-active {
+  opacity: 1;
+}
+
+.chapters__label {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transition:
+    max-width var(--dur-ui-slow) var(--ease-out),
+    opacity var(--dur-ui) var(--ease-out);
+}
+
+.chapters button:hover .chapters__label {
+  max-width: 180px;
+  opacity: 0.7;
+}
+
+/* --------------------------------------------------------------------------
+   Typography blocks
+   -------------------------------------------------------------------------- */
+.titles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.titles__center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding-inline: var(--safe-x);
+}
+
+.hero {
+  text-align: center;
+}
+
+/* The opening title sequence.
+   A one-shot entry on load, so the landing frame composes itself in front of the
+   reader instead of waiting to be scrolled into. Staggered by nesting depth: the
+   name, then the second word, then the line under it, then the way in. Long and
+   slow on purpose — this is the first thing anyone sees, and it should feel like a
+   film starting rather than a page painting. */
+@keyframes hero-enter {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.hero--intro .hero__wordmark > span:first-child {
+  animation: hero-enter 1700ms var(--ease-out) 220ms backwards;
+}
+
+.hero--intro .hero__wordmark > span:last-child {
+  animation: hero-enter 1700ms var(--ease-out) 660ms backwards;
+}
+
+.hero--intro .hero__meta {
+  animation: hero-enter 1500ms var(--ease-out) 1100ms backwards;
+}
+
+.scroll-hint.hero--intro {
+  animation: hero-enter 1400ms var(--ease-out) 1600ms backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero--intro .hero__wordmark > span,
+  .hero--intro .hero__meta,
+  .scroll-hint.hero--intro {
+    animation: none;
+  }
+}
+
+.hero__wordmark {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.16em;
+  font-size: var(--display-xl);
+  margin: 0;
+}
+
+.hero__one {
+  color: var(--text-primary);
+}
+
+/* Out of the centre stack and into the corner.
+   Wordmark and product are both centred, so anything set under the wordmark lands
+   on the brightest part of the body — the descriptor was unreadable exactly where
+   it mattered. In the lower left it sits over floor, which is the darkest area of
+   the frame, and the composition gains the asymmetry that makes a centred hero
+   read as art-directed rather than merely centred. */
+.hero__meta {
+  position: fixed;
+  left: var(--safe-x);
+  bottom: 12vh;
+  display: grid;
+  gap: var(--space-3);
+  text-align: left;
+  max-width: min(30ch, 40vw);
+}
+
+.hero__meta .mono {
+  color: var(--text-tertiary);
+}
+
+.hero__tagline {
+  font-size: var(--body-lg);
+  color: var(--text-secondary);
+  letter-spacing: -0.01em;
+}
+
+.heading {
+  font-size: var(--heading-md);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-3);
+}
+
+.heading--lg {
+  font-size: var(--heading-lg);
+}
+
+/* The big centred blocks sit over the product, and the product is polished metal
+   under a key light — white on white. A wide, very soft shadow is invisible
+   against the dark set and gives the type an edge everywhere else. */
+.statement,
+.stack__word,
+.hero__wordmark,
+.hero__meta,
+.finale__wordmark,
+.finale__tagline,
+.thermal-hero__temp,
+.thermal-hero__clock {
+  text-shadow:
+    0 2px 30px rgba(3, 4, 5, 0.78),
+    0 0 6px rgba(3, 4, 5, 0.5);
+}
+
+.statement {
+  font-size: var(--display-md);
+  text-align: center;
+  max-width: 15ch;
+}
+
+.statement--xl {
+  font-size: var(--display-lg);
+}
+
+.stack {
+  display: grid;
+  place-items: center;
+}
+
+.stack__word {
+  grid-area: 1 / 1;
+  font-size: var(--display-lg);
+  text-align: center;
+}
+
+.stack--tight .stack__word {
+  font-size: var(--display-md);
+  max-width: 18ch;
+}
+
+.corner {
+  position: absolute;
+  max-width: min(440px, 40vw);
+}
+
+.corner--bottom-left {
+  left: var(--safe-x);
+  bottom: 13vh;
+}
+
+.corner--left {
+  left: var(--safe-x);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.corner--top-left {
+  left: var(--safe-x);
+  top: calc(var(--navbar-h) + 7vh);
+}
+
+.corner--top {
+  left: 50%;
+  top: calc(var(--navbar-h) + 7vh);
+  transform: translateX(-50%);
+  text-align: center;
+  max-width: 90vw;
+}
+
+.mono--dim {
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scroll-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 6vh;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-primary);
+  opacity: 0.5;
+  /* Sits over the base of the product, so it needs the same separation the
+     headlines get. */
+  text-shadow: 0 2px 24px rgba(3, 4, 5, 0.85);
+}
+
+.fiction-badge {
+  position: fixed;
+  right: var(--safe-x);
+  bottom: 18px;
+  color: var(--text-disabled);
+  font-size: 10px;
+  z-index: 12;
+}
+
+/* --------------------------------------------------------------------------
+   Callouts — spec §32, §33
+   -------------------------------------------------------------------------- */
+.callouts {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.callout-svg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.callout-svg__line {
+  stroke: rgba(255, 255, 255, 0.42);
+  stroke-width: 1;
+  opacity: 0;
+  transition: opacity var(--dur-ui) var(--ease-out);
+}
+
+.callout-svg__dot {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.7);
+  stroke-width: 1;
+  opacity: 0;
+  transition: opacity var(--dur-ui) var(--ease-out);
+}
+
+.callout {
+  position: fixed;
+  /* Clears the chapter indicator column, which lives against the right edge. */
+  right: calc(var(--safe-x) + 46px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: clamp(300px, 24vw, 360px);
+  padding: 22px;
+  border-radius: var(--radius-card);
+  background: rgba(9, 10, 11, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--dur-ui-slow) var(--ease-out),
+    visibility var(--dur-ui-slow);
+}
+
+.callout.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.callout__index {
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-4);
+}
+
+.callout__title {
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-4);
+}
+
+.callout__facts {
+  display: grid;
+  gap: 5px;
+  margin-bottom: var(--space-4);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: var(--body-sm);
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+}
+
+.callout__description {
+  font-size: var(--body-sm);
+  line-height: 1.5;
+  color: var(--text-secondary);
+  max-width: 300px;
+}
+
+/* --------------------------------------------------------------------------
+   Thermal test overlay — spec §48
+   -------------------------------------------------------------------------- */
+.thermal-timer {
+  position: fixed;
+  right: var(--safe-x);
+  top: calc(var(--navbar-h) + 20px);
+  text-align: right;
+  z-index: 14;
+}
+
+.thermal-timer__temp {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 26px;
+  letter-spacing: -0.01em;
+  margin-top: var(--space-2);
+}
+
+.thermal-timer__clock {
+  font-size: 13px;
+  color: var(--text-secondary);
+  letter-spacing: 0.06em;
+}
+
+/* The readout as the subject rather than an annotation: its own centred block, so
+   it fades and rises in like every other headline instead of jumping across the
+   screen and changing size in one frame. */
+.thermal-hero {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 15;
+  pointer-events: none;
+}
+
+.thermal-hero__temp {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: clamp(72px, 11vw, 168px);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-top: var(--space-3);
+}
+
+.thermal-hero__clock {
+  font-size: clamp(16px, 1.8vw, 26px);
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin-top: var(--space-3);
+}
+
+.core-temp {
+  position: fixed;
+  left: var(--safe-x);
+  bottom: 13vh;
+}
+
+.core-temp__value {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 34px;
+  letter-spacing: -0.02em;
+  margin-top: var(--space-2);
+}
+
+/* --------------------------------------------------------------------------
+   Material selector — spec §75
+   -------------------------------------------------------------------------- */
+/* Right-hand column, the same one the callout cards use. Centred under the
+   product it sat behind it — and the material macro pushes the camera close
+   enough that the bottle covers the middle of the frame entirely. */
+.finish-select {
+  position: fixed;
+  right: calc(var(--safe-x) + 46px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 16;
+  /* The macro fills most of the frame with lit metal; the labels need the same
+     card the callouts stand on to stay legible against it. */
+  padding: 18px 22px;
+  border-radius: var(--radius-card);
+  background: rgba(9, 10, 11, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.finish-select fieldset {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: start;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.finish-select label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  opacity: 0.48;
+  transition: opacity var(--dur-ui) var(--ease-out);
+}
+
+.finish-select label.is-active,
+.finish-select label:hover {
+  opacity: 1;
+}
+
+.finish-select label:focus-within {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 6px;
+  border-radius: 4px;
+}
+
+.finish-select__swatch {
+  width: 13px;
+  height: 13px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  transition: border-color var(--dur-ui) var(--ease-out);
+}
+
+.finish-select label.is-active .finish-select__swatch {
+  border-color: rgba(255, 255, 255, 0.72);
+}
+
+/* --------------------------------------------------------------------------
+   Engraving — spec §80
+   -------------------------------------------------------------------------- */
+.engraving {
+  position: fixed;
+  /* Same clearance as the callout card, for the chapter indicator column. */
+  right: calc(var(--safe-x) + 46px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(320px, 84vw);
+  display: grid;
+  gap: var(--space-4);
+  z-index: 16;
+}
+
+.engraving input,
+.sheet input {
+  width: 100%;
+  height: 44px;
+  padding-inline: 14px;
+  border-radius: 8px;
+  background: rgba(9, 10, 11, 0.7);
+  border: 1px solid var(--line-default);
+  color: var(--text-primary);
+  font-size: var(--body-md);
+  letter-spacing: 0.02em;
+  transition: border-color var(--dur-ui) var(--ease-out);
+}
+
+.engraving input::placeholder,
+.sheet input::placeholder {
+  color: var(--text-disabled);
+}
+
+.engraving input:hover,
+.sheet input:hover {
+  border-color: var(--line-strong);
+}
+
+.segmented {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 1px;
+  padding: 2px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.segmented button {
+  padding: 9px 6px;
+  border-radius: 6px;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-ui) var(--ease-out),
+    color var(--dur-ui) var(--ease-out);
+}
+
+.segmented button.is-active {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.engraving__note {
+  font-size: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   Drop test — spec §86
+   -------------------------------------------------------------------------- */
+.drop-panel {
+  position: fixed;
+  left: 50%;
+  bottom: 9vh;
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  text-align: center;
+  z-index: 16;
+}
+
+.drop-panel__result {
+  font-size: var(--heading-md);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   Finale, footer
+   -------------------------------------------------------------------------- */
+.finale {
+  position: fixed;
+  left: 50%;
+  top: 23%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: min(1100px, 92vw);
+}
+
+.finale__wordmark {
+  font-size: var(--display-md);
+  margin: 0;
+}
+
+.finale__tagline {
+  margin-top: var(--space-4);
+  font-size: var(--body-lg);
+  color: var(--text-secondary);
+}
+
+.finale-cta {
+  position: fixed;
+  left: 50%;
+  bottom: 13vh;
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+  gap: var(--space-5);
+  z-index: 16;
+}
+
+.finale-cta__meta {
+  display: flex;
+  gap: var(--space-5);
+  color: var(--text-tertiary);
+}
+
+.finale-cta__buttons {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.site-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding: var(--space-6) var(--safe-x);
+  /* The last block on the page sits on the viewport edge, so the browser chrome
+     of a phone would otherwise take a bite out of the legal line. */
+  padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--line-soft);
+  background: linear-gradient(to top, rgba(5, 6, 7, 0.92), rgba(5, 6, 7, 0));
+  z-index: 14;
+}
+
+.site-footer__brand {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.site-footer__brand .display {
+  font-size: 20px;
+  letter-spacing: 0.2em;
+  /* `.display` runs at 0.88, which is right for a 150px wordmark and clips the
+     descender box of a 20px one straight into the line under it. */
+  line-height: 1.1;
+}
+
+.site-footer__links {
+  display: flex;
+  gap: var(--space-5);
+}
+
+.site-footer__links button {
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: color var(--dur-ui) var(--ease-out);
+}
+
+.site-footer__links button:hover {
+  color: var(--text-primary);
+}
+
+.site-footer__legal {
+  text-align: right;
+  display: grid;
+  gap: 4px;
+}
+
+.site-footer__legal .mono:last-child {
+  color: var(--text-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   Configurator sheet + cart drawer — spec §90, §91
+   -------------------------------------------------------------------------- */
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: var(--space-5);
+  background: rgba(3, 4, 5, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-ui-slow) var(--ease-out);
+}
+
+.sheet--open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sheet__inner {
+  width: min(520px, 100%);
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: var(--space-6);
+  border-radius: 14px;
+  background: var(--bg-100);
+  border: 1px solid var(--line-default);
+  display: grid;
+  gap: var(--space-5);
+}
+
+.sheet__inner header,
+.drawer header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sheet__product {
+  font-size: var(--heading-md);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.sheet__inner section {
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line-soft);
+}
+
+.sheet__inner h3 {
+  margin: 0;
+  font-weight: 400;
+}
+
+.sheet__finishes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.sheet__finishes button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 9px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line-default);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-ui) var(--ease-out),
+    color var(--dur-ui) var(--ease-out);
+}
+
+.sheet__finishes button.is-active {
+  border-color: var(--line-strong);
+  color: var(--text-primary);
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--line-default);
+  width: fit-content;
+}
+
+.stepper button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.stepper button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+}
+
+.stepper button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.stepper span {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  min-width: 18px;
+  text-align: center;
+}
+
+.sheet__inner footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line-soft);
+}
+
+.sheet__price,
+.drawer__price {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 20px;
+}
+
+.sheet__notice,
+.drawer__notice {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-tertiary);
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 65;
+  width: min(400px, 100vw);
+  padding: var(--space-6) var(--space-5);
+  background: var(--bg-100);
+  border-left: 1px solid var(--line-default);
+  display: grid;
+  align-content: start;
+  gap: var(--space-5);
+  transform: translateX(100%);
+  transition: transform var(--dur-ui-slow) var(--ease-out);
+}
+
+.drawer--open {
+  transform: translateX(0);
+}
+
+.drawer__item {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: var(--space-4);
+  align-items: start;
+  padding-block: var(--space-4);
+  border-block: 1px solid var(--line-soft);
+}
+
+.drawer__thumb {
+  width: 56px;
+  height: 76px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.drawer__name {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+
+.drawer__empty {
+  color: var(--text-tertiary);
+}
+
+.drawer__checkout {
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Loader — spec §17
+   -------------------------------------------------------------------------- */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: var(--bg-000);
+  transition: opacity 620ms var(--ease-out);
+}
+
+.loader--out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loader__inner {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-7);
+}
+
+.loader__brand {
+  font-size: clamp(34px, 6vw, 56px);
+  letter-spacing: 0.26em;
+  margin-left: 0.26em;
+}
+
+.loader__ring {
+  position: relative;
+  width: 132px;
+  height: 132px;
+  display: grid;
+  place-items: center;
+}
+
+.loader__ring svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.loader__track,
+.loader__value {
+  fill: none;
+  stroke-width: 1;
+}
+
+.loader__track {
+  stroke: rgba(255, 255, 255, 0.09);
+}
+
+.loader__value {
+  stroke: rgba(243, 243, 240, 0.85);
+  transition: stroke-dashoffset 220ms linear;
+}
+
+.loader__count {
+  font-size: 20px;
+  letter-spacing: 0.06em;
+  color: var(--text-primary);
+}
+
+.loader__label {
+  color: var(--text-tertiary);
+}
+
+.blackout {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: #000;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Cursor — spec §16
+   -------------------------------------------------------------------------- */
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 90;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.cursor__dot {
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.cursor__label {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   Static fallback — spec §112
+   -------------------------------------------------------------------------- */
+.static {
+  position: relative;
+  z-index: 1;
+  max-width: 1080px;
+  margin-inline: auto;
+  padding: var(--space-9) var(--safe-x) var(--space-8);
+  display: grid;
+  gap: var(--space-9);
+}
+
+.static__notice {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  max-width: 62ch;
+  padding: var(--space-5);
+  border: 1px solid var(--line-default);
+  border-radius: var(--radius-card);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.static__notice p {
+  font-size: var(--body-md);
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.static__notice .mono {
+  font-size: var(--micro);
+  line-height: 1.7;
+  display: block;
+}
+
+.static__hero {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: start;
+}
+
+.static__title {
+  font-size: var(--display-md);
+  margin: 0;
+}
+
+.static__category {
+  color: var(--text-tertiary);
+}
+
+.static__tagline {
+  font-size: var(--body-lg);
+  color: var(--text-secondary);
+}
+
+.static__image {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  margin-top: var(--space-5);
+  border-radius: 10px;
+}
+
+.static__section {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.static__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-6);
+}
+
+.static__grid article {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line-soft);
+}
+
+.static__grid h3 {
+  font-size: var(--body-lg);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.static__grid ul,
+.static__grid p {
+  font-size: var(--body-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.static__finishes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+}
+
+.static__finishes li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.static__cta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.static__price {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 24px;
+}
+
+.static__footer {
+  display: grid;
+  gap: var(--space-2);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--line-soft);
+}
+
+.static__footer .display {
+  font-size: 20px;
+  letter-spacing: 0.2em;
+}
+
+.static__legal {
+  margin-top: var(--space-4);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  max-width: 60ch;
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   Responsive — spec §107–§109, §186–§189
+   ========================================================================== */
+
+@media (max-width: 1023px) {
+  .chapters {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .navbar__links {
+    display: none;
+  }
+
+  .navbar__menu {
+    display: inline-flex;
+  }
+
+  .hero__wordmark {
+    font-size: clamp(48px, 18vw, 82px);
+    flex-direction: column;
+    gap: 0;
+    line-height: 0.9;
+  }
+
+  .statement,
+  .statement--xl,
+  .stack__word,
+  .stack--tight .stack__word {
+    font-size: clamp(38px, 12vw, 62px);
+  }
+
+  .corner {
+    max-width: none;
+    width: calc(100vw - var(--safe-x) * 2);
+  }
+
+  .corner--left,
+  .corner--top-left {
+    top: auto;
+    bottom: 22vh;
+    transform: none;
+  }
+
+  /* Callouts move to a bottom card; the connector may go (spec §109). */
+  .callout {
+    right: 18px;
+    left: 18px;
+    top: auto;
+    bottom: 16px;
+    width: auto;
+    transform: none;
+    padding: 18px;
+  }
+
+  .callout-svg {
+    display: none;
+  }
+
+  .engraving {
+    right: 18px;
+    left: 18px;
+    top: auto;
+    bottom: 16px;
+    width: auto;
+    transform: none;
+    padding: 18px;
+    border-radius: var(--radius-card);
+    background: rgba(9, 10, 11, 0.78);
+    border: 1px solid var(--line-default);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .finish-select {
+    left: 18px;
+    right: 18px;
+    top: auto;
+    bottom: 4vh;
+    transform: none;
+    width: auto;
+  }
+
+  .finish-select fieldset {
+    grid-auto-flow: column;
+    justify-content: space-between;
+    justify-items: center;
+    gap: var(--space-3);
+  }
+
+  .finish-select label .mono {
+    font-size: 10px;
+  }
+
+  .thermal-timer {
+    top: auto;
+    bottom: 16px;
+    right: 18px;
+  }
+
+  .thermal-timer__temp {
+    font-size: 22px;
+  }
+
+  .core-temp {
+    bottom: 22vh;
+  }
+
+  .finale {
+    top: 38%;
+  }
+
+  .finale-cta {
+    bottom: 24vh;
+    width: calc(100vw - 36px);
+  }
+
+  .finale-cta__buttons {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .finale-cta__buttons .btn {
+    width: 100%;
+  }
+
+  .site-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+    padding-block: var(--space-5);
+  }
+
+  .site-footer__legal {
+    text-align: left;
+  }
+
+  .fiction-badge {
+    display: none;
+  }
+
+  .drawer {
+    width: 100vw;
+  }
+
+  .sheet__inner {
+    padding: var(--space-5);
+  }
+}
+
+/* Ultrawide — keep the cards near the product, not pinned to a distant edge. */
+@media (min-width: 1800px) {
+  .callout {
+    right: max(calc(var(--safe-x) + 46px), calc(50vw - 620px));
+  }
+
+  .engraving {
+    right: max(calc(var(--safe-x) + 46px), calc(50vw - 620px));
+  }
+
+  .corner--top-left,
+  .corner--left,
+  .corner--bottom-left {
+    left: max(var(--safe-x), calc(50vw - 720px));
+  }
+}

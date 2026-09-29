@@ -1,0 +1,15 @@
+export const chapters = [
+  { id: 'reveal', scroll: 1200 },
+  { id: 'inspection', scroll: 1800 },
+  { id: 'crown-open', scroll: 1600 },
+  { id: 'crown-exploded', scroll: 3200 },
+  { id: 'cold', scroll: 1200 },
+  { id: 'hot', scroll: 1200 },
+  { id: 'thermal', scroll: 3600 },
+  { id: 'time-compression', scroll: 1800 },
+  { id: 'charging', scroll: 2600 },
+  { id: 'materials', scroll: 1800 },
+  { id: 'personalization', scroll: 1500 },
+  { id: 'drop-test', scroll: 1500 },
+  { id: 'finale', scroll: 1200 },
+]
