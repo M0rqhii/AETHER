@@ -4,8 +4,16 @@ import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 import './overlay.css'
 
+/**
+ * Absolute base for the OG/Twitter image URLs. On Vercel this is the project's
+ * real production domain (preview deployments are resolved to their own URL by
+ * Next itself); a hard-coded host would point social cards at someone else's site
+ * whenever the project is deployed under a different name.
+ */
+const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://aethr-one.vercel.app'),
+  metadataBase: new URL(productionHost ? `https://${productionHost}` : 'http://localhost:3000'),
   title: 'AETHR ONE — Temperature. Engineered.',
   description:
     'A fictional interactive premium thermal vessel experience built around precision engineering, smart sensing and advanced thermal design.',

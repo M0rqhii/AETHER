@@ -250,7 +250,8 @@ export interface EngravingTexture {
 export function createEngravingTexture(): EngravingTexture {
   const mask = document.createElement('canvas')
   mask.width = mask.height = ENGRAVE_SIZE
-  const mctx = mask.getContext('2d')!
+  // Read back on every redraw to derive the normal map, so keep it CPU-side.
+  const mctx = mask.getContext('2d', { willReadFrequently: true })!
 
   const normal = document.createElement('canvas')
   normal.width = normal.height = ENGRAVE_SIZE

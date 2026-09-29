@@ -10,12 +10,15 @@ const nextConfig = {
    */
   distDir: process.env.NEXT_DIST_DIR || '.next',
   async headers() {
+    // Models and the Draco decoder keep the same URL across deploys (no content
+    // hash), so they must not be `immutable` — a returning visitor would keep an
+    // outdated model, or pair a new decoder wrapper with a stale wasm, for a year.
+    // Cache for a day, then revalidate by ETag. The decoder's JS and wasm share one
+    // policy so they always expire together.
+    const assetCache = [{ key: 'Cache-Control', value: 'public, max-age=86400, must-revalidate' }]
     return [
-      {
-        // Models and the draco decoder are content-addressed by build; cache hard.
-        source: '/:path*.(glb|wasm)',
-        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
-      },
+      { source: '/models/:path*', headers: assetCache },
+      { source: '/draco/:path*', headers: assetCache },
     ]
   },
 }

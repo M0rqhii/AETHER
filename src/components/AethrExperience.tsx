@@ -1,15 +1,38 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { TOTAL_SCROLL } from '@/lib/aethr/chapters'
 import { useEnvironment } from '@/hooks/useEnvironment'
 import { useScrollDriver } from '@/hooks/useScrollDriver'
 import { useExperience } from '@/state/experience'
 import { detectRenderer, type RendererInfo } from '@/lib/aethr/renderer'
-import { ExperienceCanvas } from './experience/ExperienceCanvas'
 import { Overlay } from './ui/Overlay'
 import { LoadingScreen } from './ui/LoadingScreen'
 import { StaticFallback } from './ui/StaticFallback'
+
+/**
+ * The WebGL scene lives in its own chunk. R3F, postprocessing and Rapier (whose
+ * inlined wasm alone is ~800 kB gzipped) plus the module-level `useGLTF.preload`
+ * calls only load once the renderer check has picked the 3D path — visitors on the
+ * static fallback never download them, and the loader paints before they arrive.
+ * The loader's `useProgress` store stays in the main chunk, so it is already
+ * listening when the chunk starts fetching the models.
+ *
+ * A chunk that fails to download is handled like a WebGL failure: the static
+ * experience takes over instead of the page going blank.
+ */
+const ExperienceCanvas = dynamic(
+  () =>
+    import('./experience/ExperienceCanvas')
+      .then((m) => m.ExperienceCanvas)
+      .catch((error: unknown) => {
+        console.error('[aethr] 3D experience failed to load', error)
+        useExperience.getState().setFailed(true)
+        return () => null
+      }),
+  { ssr: false },
+)
 
 export function AethrExperience() {
   useEnvironment()
