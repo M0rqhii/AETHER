@@ -4,10 +4,20 @@ import { FlatCompat } from '@eslint/eslintrc'
 
 const compat = new FlatCompat({ baseDirectory: dirname(fileURLToPath(import.meta.url)) })
 
-export default [
+const config = [
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
-    ignores: ['.next/**', 'node_modules/**', 'AETHR_ONE_FINAL_MASTER_PACKAGE/**', 'graphify-out/**', 'scripts/**'],
+    // `public/` only holds vendored, minified third-party code (the Draco decoder).
+    ignores: [
+      '.next/**',
+      '.next-build/**',
+      'node_modules/**',
+      'next-env.d.ts',
+      'public/**',
+      'AETHR_ONE_FINAL_MASTER_PACKAGE/**',
+      'graphify-out/**',
+      'scripts/**',
+    ],
   },
   {
     rules: {
@@ -16,3 +26,5 @@ export default [
     },
   },
 ]
+
+export default config

@@ -257,13 +257,6 @@ function pulsePx(p: number, range: Range, rise = 0.18, fall = 0.28, minPx = BEAT
   return pulse(local(p, range), r, f)
 }
 
-/** A 0→1 ramp that always takes `px` of scroll, starting where `range` starts. */
-function rampPx(p: number, range: Range, px = BEAT_PX): number {
-  const spanPx = (range[1] - range[0]) * TOTAL_SCROLL
-  if (spanPx <= 0) return p >= range[1] ? 1 : 0
-  return smoothstep(local(p, range) / clamp01(px / spanPx || 1))
-}
-
 function oledAt(p: number): { content: OledContent; brightness: number } {
   // Charging percentage — held from the moment the crown seats.
   if (p >= P.chargeSeated[0]) {
@@ -426,7 +419,6 @@ export function computePose(p: number, out: Pose): Pose {
   }
 
   /* ---- Status ring: one restrained pulse on seating (spec §68) ------------ */
-  const seatT = local(p, [P.chargeDock[1] - 0.004, P.chargeSeated[1]])
   out.statusRing = dockingActive
     ? pulsePx(p, [P.chargeDock[1] - 0.004, P.chargeSeated[1]], 0.1, 0.5) * 0.9 + (p > P.chargeSeated[0] ? 0.14 : 0)
     : 0
