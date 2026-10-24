@@ -25,3 +25,15 @@ Thumbs.db
 
 # graphify knowledge graph (generated, rebuild with: graphify update .)
 graphify-out/
+
+# AI assistant tooling (local-only)
+.claude/
+CLAUDE.md
+.gemini/
+GEMINI.md
+.codex/
+.cursor/
+.cursorrules
+.windsurf/
+.windsurfrules
+AGENTS.md
