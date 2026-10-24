@@ -49,7 +49,9 @@ export function ExperienceCanvas() {
       <WebGLBoundary onError={() => setFailed(true)}>
         <Canvas
           dpr={dpr}
-          shadows="soft"
+          // PCFShadowMap: three r186 removed PCFSoftShadowMap (what "soft" maps to)
+          // and silently falls back to this anyway.
+          shadows="percentage"
           gl={{
             // The composer does its own multisampling; canvas AA would be wasted.
             antialias: false,
